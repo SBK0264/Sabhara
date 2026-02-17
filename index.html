@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal SBK CIBATU</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            /* PERUBAHAN WARNA KHAS SAKA BHAYANGKARA (MERAH & KUNING) */
+            --primary: #d32f2f; /* Merah */
+            --secondary: #fbc02d; /* Kuning Emas */
+            --glass-bg: rgba(0, 0, 0, 0.6); /* Lebih gelap agar teks putih terbaca di background terang */
+            --glass-border: rgba(255, 215, 0, 0.3); /* Border kekuningan */
+            --text-color: #ffffff;
+            /* Gradasi Merah Gelap ke Kuning/Oranye */
+            --bg-gradient: linear-gradient(135deg, #4a0000 0%, #b71c1c 40%, #ff6f00 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            min-height: 100vh;
+            background-attachment: fixed;
+            background-size: cover;
+            overflow-x: hidden;
+        }
+
+        /* Utility Class for Glassmorphism */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn:hover { background: var(--secondary); color: #333; transform: translateY(-2px); }
+        
+        .btn-danger { background: #b91c1c; }
+        .btn-danger:hover { background: #991b1b; }
+        
+        .btn-success { background: #15803d; }
+        
+        .btn-small { width: auto; padding: 6px 12px; font-size: 0.8rem; border-radius: 8px; }
+
+        /* --- VIEWS --- */
+        .view { display: none !important; padding: 20px; animation: fadeIn 0.5s ease; max-width: 1200px; margin: 0 auto; }
+        .view.active { display: block !important; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- LOGIN VIEW --- */
+        #login-view {
+            height: 100vh;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+        }
+        #login-view:not(.active) { display: none !important; }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.95); 
+            color: #333;
+            padding: 40px 30px;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border: 4px solid #b71c1c;
+        }
+
+        .login-card h2 { color: #b71c1c; margin-bottom: 5px; font-weight: 700; }
+        .login-card p { color: #d97706; margin-bottom: 30px; font-size: 0.9rem; font-weight: 600; }
+        
+        .form-group { text-align: left; margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 8px; color: #450a0a; }
+        .form-input, .form-select, .form-textarea {
+            width: 100%; padding: 12px; border: 2px solid #fed7aa;
+            border-radius: 12px; outline: none; transition: 0.3s;
+            background: #fff7ed; color: #333;
+        }
+        .form-textarea { resize: vertical; min-height: 100px; }
+        .form-input:focus, .form-textarea:focus { border-color: var(--primary); background: white; }
+
+        /* --- DASHBOARD VIEW --- */
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1px solid var(--glass-border);
+        }
+        
+        .user-info h3 { font-size: 1.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        .user-info span { font-size: 0.9rem; opacity: 1; background: #fbc02d; color: #333; font-weight: bold; padding: 4px 10px; border-radius: 20px; }
+
+        .grid-menu {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        @media (min-width: 768px) {
+            .grid-menu { grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        }
+
+        .menu-card {
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 140px;
+            /* Background kartu menu sedikit kemerahan transparan */
+            background: rgba(185, 28, 28, 0.4); 
+            border: 1px solid rgba(251, 192, 45, 0.3);
+        }
+
+        .menu-card:hover { background: rgba(251, 192, 45, 0.8); transform: translateY(-5px); color: #333; }
+        .menu-card:hover i { color: #b71c1c; }
+        .menu-card i { font-size: 2.5rem; margin-bottom: 15px; color: #fcd34d; transition: 0.3s; }
+        .menu-card h4 { font-weight: 600; font-size: 0.95rem; }
+
+        /* --- FEATURE VIEWS GENERIC --- */
+        .feature-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .back-btn { background: rgba(255,255,255,0.2); padding: 10px 15px; border-radius: 50%; cursor: pointer; }
+        .back-btn:hover { background: var(--secondary); color: #333; }
+        
+        .content-card { padding: 20px; margin-bottom: 20px; }
+        
+        /* List Items */
+        .list-item {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 15px; border-radius: 12px;
+            margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .list-item.done { text-decoration: line-through; opacity: 0.6; }
+        
+        /* --- WARNA TAG --- */
+        .tag { padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; color: white; text-transform: uppercase; letter-spacing: 0.5px; }
+        .tag-all { background: #d32f2f; border: 1px solid white; }
+        .tag-ketua { background: #fbc02d; color: black; }
+        .tag-wakil { background: #f97316; }
+        .tag-bendahara { background: #10b981; }
+        .tag-sekretaris { background: #06b6d4; }
+        .tag-logistik { background: #78716c; }
+        .tag-humas { background: #8b5cf6; }
+        .tag-acara { background: #ec4899; }
+        .tag-pdd { background: #3b82f6; }
+        .tag-keamanan { background: #6366f1; }
+        .tag-green { background: #10b981; } 
+        .tag-blue { background: #3b82f6; }
+
+
+        /* Specific Features */
+        .finance-summary { font-size: 2rem; font-weight: bold; text-align: center; margin: 20px 0; color: #fcd34d; text-shadow: 0 0 10px rgba(252, 211, 77, 0.5); }
+        
+        /* Floating Add Button */
+        .fab {
+            position: fixed; bottom: 30px; right: 30px;
+            background: var(--secondary); color: #333; width: 60px; height: 60px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; box-shadow: 0 10px 20px rgba(0,0,0,0.5); cursor: pointer;
+            border: 2px solid white;
+        }
+        .fab:hover { transform: scale(1.1); background: white; color: var(--primary); }
+
+        /* Modal */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center;
+            z-index: 1000; opacity: 0; pointer-events: none; transition: 0.3s;
+        }
+        .modal.active { opacity: 1; pointer-events: all; }
+        .modal-content { background: #450a0a; border: 2px solid #fbc02d; padding: 30px; border-radius: 16px; width: 90%; max-width: 500px; }
+        .modal-content input, .modal-content select, .modal-content textarea {
+            width: 100%; background: #290505; border: 1px solid #7f1d1d; color: white; padding: 10px; margin-bottom: 15px; border-radius: 8px;
+        }
+        .modal-content h3 { color: #fbc02d; margin-bottom: 15px; }
+
+        /* Documentation Grid */
+        .doc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
+        .doc-card { background: white; color: #333; padding: 15px; border-radius: 12px; cursor: pointer; transition: 0.3s; }
+        .doc-card:hover { transform: scale(1.02); box-shadow: 0 0 15px rgba(251, 192, 45, 0.6); }
+        .doc-card h5 { font-size: 1.1rem; color: #b71c1c; margin-bottom: 5px; }
+        .doc-card small { color: #64748b; }
+
+        /* --- TUTORIAL OVERLAY CSS --- */
+        #tutorialOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 9999;
+            display: none; align-items: center; justify-content: center;
+        }
+        .tutorial-box {
+            background: rgba(185, 28, 28, 0.2);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 2px solid #fbc02d;
+            padding: 30px; border-radius: 20px;
+            max-width: 400px; width: 90%; text-align: center;
+            animation: popIn 0.4s ease;
+        }
+        @keyframes popIn { from{transform: scale(0.8); opacity:0;} to{transform: scale(1); opacity:1;} }
+        .tut-icon { font-size: 3rem; margin-bottom: 15px; color: #fbc02d; }
+        .tut-dots { display: flex; justify-content: center; gap: 5px; margin: 20px 0; }
+        .dot { width: 8px; height: 8px; background: rgba(255,255,255,0.3); border-radius: 50%; }
+        .dot.active { background: #fbc02d; width: 20px; border-radius: 10px; }
+        .tut-btn-group { display: flex; gap: 10px; }
+
+    </style>
+</head>
+<body>
+
+    <div id="app">
+        <div id="toast" style="position: fixed; top: 20px; right: 20px; background: #fbc02d; color: #333; padding: 12px 24px; border-radius: 8px; z-index: 2000; display: none; font-weight: bold; border: 2px solid #b71c1c;"></div>
+
+        <div id="tutorialOverlay">
+            <div class="tutorial-box">
+                <i id="tutIcon" class="fa-solid fa-hand-sparkles tut-icon"></i>
+                <h3 id="tutTitle" style="margin-bottom: 10px;">Selamat Datang!</h3>
+                <p id="tutDesc" style="font-size: 0.95rem; line-height: 1.6; min-height: 80px;">
+                    Selamat datang di Portal SBK CIBATU. Ini adalah panduan singkat untuk anggota.
+                </p>
+                <div id="tutDots" class="tut-dots">
+                    </div>
+                <div class="tut-btn-group">
+                    <button class="btn btn-danger" onclick="endTutorial()">Lewati</button>
+                    <button class="btn" onclick="nextTutorial()">Lanjut</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="login-view" class="view active">
+            <div class="login-card">
+                <i class="fa-solid fa-shield-halved" style="font-size: 3rem; color: #b71c1c; margin-bottom: 10px;"></i>
+                <h2>PORTAL SBK</h2>
+                <p>Saka Bhayangkara Cibatu</p>
+
+                <div class="form-group">
+                    <label>Nama Anggota</label>
+                    <input type="text" id="loginName" class="form-input" placeholder="Nama Lengkap/Panggilan">
+                </div>
+
+                <div class="form-group">
+                    <label>Jabatan / Krida</label>
+                    <select id="loginRole" class="form-select" onchange="togglePasswordInput()">
+                        <option value="Anggota">Anggota Saka</option>
+                        <option value="Bendahara">Bendahara Dewan</option>
+                        <option value="Ketua">Ketua Dewan Saka</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="passGroup" style="display: none;">
+                    <label>Kata Sandi Khusus</label>
+                    <input type="password" id="loginPass" class="form-input" placeholder="Masukkan password dewan">
+                </div>
+
+                <button class="btn" onclick="handleLogin()">Masuk Portal <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <div id="dashboard-view" class="view">
+            <header>
+                <div class="user-info">
+                    <h3 id="dashName">Nama User</h3>
+                    <span id="dashRole">Jabatan</span>
+                </div>
+                <button class="btn-small btn-danger" onclick="logout()"><i class="fa-solid fa-power-off"></i></button>
+            </header>
+
+            <div class="grid-menu">
+                <div class="menu-card glass" onclick="openFeature('tugas')">
+                    <i class="fa-solid fa-clipboard-check"></i>
+                    <h4>Laporan Giat</h4>
+                </div>
+                <div class="menu-card glass" onclick="openFeature('poin')">
+                    <i class="fa-solid fa-star"></i>
+                    <h4>Poin Keaktifan</h4>
+                </div>
+                <div class="menu-card glass" onclick="openFeature('keuangan')">
+                    <i class="fa-solid fa-wallet"></i>
+                    <h4>Kas Saka</h4>
+                </div>
+                <div class="menu-card glass" onclick="openFeature('deadline')">
+                    <i class="fa-solid fa-hourglass-half"></i>
+                    <h4>Jadwal & Deadline</h4>
+                </div>
+                <div class="menu-card glass" onclick="openFeature('dokumentasi')">
+                    <i class="fa-solid fa-camera"></i>
+                    <h4>Dokumentasi Giat</h4>
+                </div>
+                <div class="menu-card glass" onclick="openFeature('divisi')">
+                    <i class="fa-solid fa-users-gear"></i>
+                    <h4>Tugas Krida/Seksi</h4>
+                </div>
+                <div class="menu-card glass" onclick="openFeature('acara')">
+                    <i class="fa-solid fa-flag-checkered"></i>
+                    <h4>Arsip Kegiatan</h4>
+                </div>
+                <div class="menu-card glass" onclick="openFeature('notulensi')">
+                    <i class="fa-solid fa-book"></i>
+                    <h4>Notulensi Rapat</h4>
+                </div>
+                <div class="menu-card glass" onclick="openFeature('aduan')">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <h4>Lapor Dewan</h4>
+                </div>
+                <div class="menu-card glass" onclick="openFeature('settings')">
+                    <i class="fa-solid fa-gear"></i>
+                    <h4>Pengaturan</h4>
+                </div>
+            </div>
+        </div>
+
+        <div id="tugas-view" class="view">
+            <div class="feature-header">
+                <div class="back-btn glass" onclick="showDashboard()"><i class="fa-solid fa-arrow-left"></i></div>
+                <h2>Laporan Kegiatan</h2>
+            </div>
+            <div class="glass content-card">
+                <label>Nama Giat/Tugas yang dilaksanakan</label>
+                <input type="text" id="tugasInput" class="form-input" style="background: rgba(0,0,0,0.3); color: white; border: none; margin-bottom: 10px;">
+                <button class="btn btn-success" onclick="submitTugas()">Kirim Laporan (+1 Poin)</button>
+            </div>
+            <h3>Riwayat Aktivitas</h3>
+            <div id="logList" style="margin-top: 15px;"></div>
+        </div>
+
+        <div id="poin-view" class="view">
+            <div class="feature-header">
+                <div class="back-btn glass" onclick="showDashboard()"><i class="fa-solid fa-arrow-left"></i></div>
+                <h2>Klasemen Keaktifan</h2>
+            </div>
+            <div class="glass content-card" style="margin-bottom: 10px;">
+                <p><small>*Ketua Dewan dapat mengurangi poin jika ada pelanggaran.</small></p>
+            </div>
+            <div id="leaderboardList"></div>
+        </div>
+
+        <div id="keuangan-view" class="view">
+            <div class="feature-header">
+                <div class="back-btn glass" onclick="showDashboard()"><i class="fa-solid fa-arrow-left"></i></div>
+                <h2>Kas Saka Bhayangkara</h2>
+            </div>
+            <div class="finance-summary glass">
+                Rp <span id="totalSaldo">0</span>
+            </div>
+            <div id="financeControls" style="display:none; gap: 10px; margin-bottom: 20px;">
+                <button class="btn btn-success" onclick="openModal('financeModal', 'income')">+ Pemasukan</button>
+                <button class="btn btn-danger" onclick="openModal('financeModal', 'expense')">- Pengeluaran</button>
+            </div>
+            <div id="financeList"></div>
+        </div>
+
+        <div id="deadline-view" class="view">
+            <div class="feature-header">
+                <div class="back-btn glass" onclick="showDashboard()"><i class="fa-solid fa-arrow-left"></i></div>
+                <h2>Jadwal & Deadline</h2>
+            </div>
+            <div id="deadlineList"></div>
+            <div id="deadlineFab" class="fab" style="display:none;" onclick="openModal('deadlineModal')">+</div>
+        </div>
+
+        <div id="dokumentasi-view" class="view">
+            <div class="feature-header">
+                <div class="back-btn glass" onclick="showDashboard()"><i class="fa-solid fa-arrow-left"></i></div>
+                <h2>Galeri Dokumentasi</h2>
+            </div>
+            <div id="docGrid" class="doc-grid"></div>
+            <div id="docFab" class="fab" style="display:none;" onclick="openModal('docModal')">+</div>
+        </div>
+
+        <div id="divisi-view" class="view">
+            <div class="feature-header">
+                <div class="back-btn glass" onclick="showDashboard()"><i class="fa-solid fa-arrow-left"></i></div>
+                <h2>Tugas Seksi/Krida</h2>
+            </div>
+            <select id="divisiSelect" class="form-input" style="background: #450a0a; color: white; margin-bottom: 20px;" onchange="loadDivisiJobs()">
+                <option value="Ketua">Ketua Dewan Saka</option>
+                <option value="Wakil">Wakil Ketua</option>
+                <option value="Bendahara">Bendahara</option>
+                <option value="Sekretaris">Sekretaris (Kerani)</option>
+                <option value="Logistik">Logistik/Perlengkapan</option>
+                <option value="Humas">Humas</option>
+                <option value="Acara">Seksi Giat/Acara</option>
+                <option value="Pdd">PDD (Dokumentasi)</option>
+                <option value="Keamanan">Keamanan/Tibmas</option>
+            </select>
+            <div id="divisiContent" class="glass content-card">
+                <textarea id="jobdescInput" style="width: 100%; height: 200px; background: transparent; color: white; border: none;" readonly></textarea>
+                <button id="saveDivisiBtn" class="btn" style="display: none; margin-top: 10px;" onclick="saveDivisi()">Simpan Perubahan</button>
+            </div>
+        </div>
+        
+        <div id="acara-view" class="view">
+            <div class="feature-header">
+                <div class="back-btn glass" onclick="showDashboard()"><i class="fa-solid fa-arrow-left"></i></div>
+                <h2>Arsip Giat Selesai</h2>
+            </div>
+            
+            <div id="acaraInputArea" class="glass content-card" style="display:none;">
+                <h4>Arsipkan Giat Baru</h4>
+                <input type="text" id="acaraTitle" placeholder="Nama Kegiatan" class="form-input" style="margin-bottom:10px; background: rgba(0,0,0,0.3); color:white; border:none;">
+                <textarea id="acaraStory" placeholder="Ceritakan kesuksesan giat ini..." class="form-textarea" style="background: rgba(0,0,0,0.3); color:white; border:none;"></textarea>
+                <button class="btn" onclick="submitAcara()" style="margin-top:10px;">Arsipkan</button>
+            </div>
+
+            <div id="acaraList"></div>
+        </div>
+
+        <div id="notulensi-view" class="view">
+            <div class="feature-header">
+                <div class="back-btn glass" onclick="showDashboard()"><i class="fa-solid fa-arrow-left"></i></div>
+                <h2>Notulensi Sangga/Dewan</h2>
+            </div>
+            
+            <div id="notulensiList"></div>
+            <div id="notulenFab" class="fab" style="display:none;" onclick="openModal('noteModal')">+</div>
+        </div>
+
+        <div id="aduan-view" class="view">
+            <div class="feature-header">
+                <div class="back-btn glass" onclick="showDashboard()"><i class="fa-solid fa-arrow-left"></i></div>
+                <h2>Layanan Lapor</h2>
+            </div>
+
+            <div id="aduanFormView">
+                <div class="glass content-card">
+                    <h4>Kirim Masukan/Laporan</h4>
+                    <p style="font-size:0.9rem; color:#fcd34d; margin-bottom:15px;">
+                        Pesan ini bersifat rahasia dan hanya akan masuk ke <strong>Inbox Ketua Dewan Saka</strong>.
+                    </p>
+                    <textarea id="aduanText" class="form-textarea" placeholder="Tulis keluhan atau saran Anda di sini..." style="background: rgba(0,0,0,0.3); color:white; border:none;"></textarea>
+                    <button class="btn btn-danger" onclick="submitAduan()" style="margin-top:10px;">Kirim Rahasia</button>
+                </div>
+            </div>
+
+            <div id="aduanInboxView" style="display:none;">
+                <h4 style="margin-bottom:15px;">Kotak Masuk (Privat)</h4>
+                <div id="aduanList"></div>
+            </div>
+        </div>
+
+        <div id="financeModal" class="modal">
+            <div class="modal-content">
+                <h3>Input Kas Saka</h3>
+                <input type="text" id="finDesc" placeholder="Keterangan">
+                <input type="number" id="finAmount" placeholder="Jumlah (Rp)">
+                <input type="hidden" id="finType">
+                <button class="btn" onclick="submitFinance()">Simpan</button>
+                <button class="btn btn-danger" style="margin-top: 10px;" onclick="closeModal('financeModal')">Batal</button>
+            </div>
+        </div>
+
+        <div id="deadlineModal" class="modal">
+            <div class="modal-content">
+                <h3>Tambah Jadwal Giat</h3>
+                <input type="text" id="dlTask" placeholder="Nama Kegiatan/Tugas">
+                
+                <label style="display:block; margin: 10px 0 5px 0; font-size:0.9rem;">Waktu Pelaksanaan:</label>
+                <input type="date" id="dlDate" class="form-input" style="color:white; background: #290505;">
+
+                <label style="display:block; margin: 10px 0 5px 0; font-size:0.9rem;">Pilih Sasaran/Seksi:</label>
+                <select id="dlColor" class="form-select">
+                    <option value="tag-all">🔴 UNTUK SEMUA (Penting)</option>
+                    <option value="tag-ketua">👑 Ketua Dewan</option>
+                    <option value="tag-wakil">🔸 Wakil Ketua</option>
+                    <option value="tag-bendahara">💵 Bendahara</option>
+                    <option value="tag-sekretaris">📝 Sekretaris</option>
+                    <option value="tag-logistik">📦 Logistik</option>
+                    <option value="tag-humas">📢 Humas</option>
+                    <option value="tag-acara">🎉 Acara/Giat</option>
+                    <option value="tag-pdd">📸 PDD (Dokumentasi)</option>
+                    <option value="tag-keamanan">🛡️ Keamanan/Tibmas</option>
+                </select>
+                <button class="btn" onclick="submitDeadline()" style="margin-top:15px;">Simpan</button>
+                <button class="btn btn-danger" style="margin-top: 10px;" onclick="closeModal('deadlineModal')">Batal</button>
+            </div>
+        </div>
+
+        <div id="docModal" class="modal">
+            <div class="modal-content">
+                <h3>Upload Dokumentasi</h3>
+                <input type="text" id="docName" placeholder="Nama Giat">
+                <input type="date" id="docDate">
+                <input type="text" id="docLink" placeholder="Link (GDrive/Youtube)">
+                <button class="btn" onclick="submitDoc()">Simpan</button>
+                <button class="btn btn-danger" style="margin-top: 10px;" onclick="closeModal('docModal')">Batal</button>
+            </div>
+        </div>
+
+        <div id="noteModal" class="modal">
+            <div class="modal-content">
+                <h3>Buat Notulensi</h3>
+                <input type="text" id="noteTitle" placeholder="Agenda Rapat">
+                <input type="date" id="noteDate">
+                <textarea id="noteContent" class="form-textarea" placeholder="Isi pembahasan..." style="background: #290505; border: 1px solid #7f1d1d; color: white;"></textarea>
+                <button class="btn" onclick="submitNotulensi()">Simpan Notulen</button>
+                <button class="btn btn-danger" style="margin-top: 10px;" onclick="closeModal('noteModal')">Batal</button>
+            </div>
+        </div>
+
+        <div id="settings-view" class="view">
+             <div class="feature-header">
+                <div class="back-btn glass" onclick="showDashboard()"><i class="fa-solid fa-arrow-left"></i></div>
+                <h2>Pengaturan</h2>
+            </div>
+            <div class="glass content-card">
+                <h4>Ganti Background</h4>
+                <p>Upload gambar favoritmu.</p>
+                <input type="file" id="bgInput" accept="image/*" class="form-input" style="margin-top: 10px;">
+                <p><small style="color:#fcd34d;">*Gambar disimpan lokal di browser ini agar aplikasi tetap ringan.</small></p>
+            </div>
+             <div class="glass content-card">
+                <h4>Aturan & Tata Tertib</h4>
+                <p>1. Lapor giat menambah 1 poin keaktifan.<br>2. Bendahara wajib lapor kas bulanan.<br>3. Cek jadwal latihan/giat berkala.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module">
+        // Import Firebase Functions
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getDatabase, ref, set, push, onValue, remove, update } 
+        from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+
+        // ==========================================
+        // KONFIGURASI FIREBASE ANDA (MASIH SAMA DENGAN YG LAMA)
+        // ==========================================
+        const firebaseConfig = {
+          apiKey: "AIzaSyC4TGrVByqOBVCoU022aBhX",
+          authDomain: "saka-37fe6.firebaseapp.com",
+          databaseURL: "https://saka-37fe6-default-rtdb.asia-southeast1.firebasedatabase.app",
+          projectId: "saka-37fe6",
+          storageBucket: "saka-37fe6.firebasestorage.app",
+          messagingSenderId: "78081783928",
+          appId: "1:78081783928:web:d91f76c17621d0ee59558d",
+          measurementId: "G-5WQZV78KTB"
+        };
+
+        // Initialize Firebase
+        let app, db;
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getDatabase(app);
+            console.log("Firebase Connected");
+        } catch (e) {
+            alert("Error Firebase: " + e.message);
+            console.error(e);
+        }
+
+        // Global State
+        let currentUser = JSON.parse(localStorage.getItem('user')) || null;
+        
+        // --- TUTORIAL LOGIC (VIA FIREBASE) ---
+        let currentStep = 0;
+        const tutorialSteps = [
+            {
+                icon: "fa-solid fa-hand-sparkles",
+                title: "Salam Pramuka!",
+                desc: "Selamat datang di Portal SBK CIBATU. Aplikasi ini dibuat untuk mempermudah manajemen Saka Bhayangkara kita."
+            },
+            {
+                icon: "fa-solid fa-clipboard-check",
+                title: "Laporan Giat & Poin",
+                desc: "Setiap Anda melakukan kegiatan/tugas Saka, wajib lapor di menu 'Laporan Giat'. Anda akan otomatis mendapat +1 Poin Keaktifan!"
+            },
+            {
+                icon: "fa-solid fa-wallet",
+                title: "Transparansi Kas",
+                desc: "Menu 'Kas Saka' menampilkan saldo uang kas secara real-time. Bendahara akan mencatat agar semua transparan."
+            },
+            {
+                icon: "fa-solid fa-hourglass-half",
+                title: "Jadwal & Krida",
+                desc: "Cek 'Jadwal Giat' agar tidak terlewat latihan. Menu 'Tugas Krida' berisi jobdesk spesifik untuk posisi Anda."
+            },
+            {
+                icon: "fa-solid fa-shield-halved",
+                title: "Lapor Dewan",
+                desc: "Punya masalah? Gunakan menu 'Lapor Dewan'. Pesan Anda bersifat RAHASIA dan hanya dibaca Ketua Dewan Saka."
+            }
+        ];
+
+        window.checkFirstLogin = () => {
+            const userRef = ref(db, 'users/' + currentUser.name + '/tutorialSeen');
+            
+            onValue(userRef, (snapshot) => {
+                const hasSeen = snapshot.val();
+                if (!hasSeen) { 
+                    document.getElementById('tutorialOverlay').style.display = 'flex';
+                    renderTutorial();
+                }
+            }, { onlyOnce: true });
+        }
+
+        window.renderTutorial = () => {
+            const step = tutorialSteps[currentStep];
+            document.getElementById('tutIcon').className = `tut-icon ${step.icon}`;
+            document.getElementById('tutTitle').innerText = step.title;
+            document.getElementById('tutDesc').innerText = step.desc;
+
+            // Render Dots
+            let dotsHtml = "";
+            tutorialSteps.forEach((_, i) => {
+                dotsHtml += `<div class="dot ${i === currentStep ? 'active' : ''}"></div>`;
+            });
+            document.getElementById('tutDots').innerHTML = dotsHtml;
+        }
+
+        window.nextTutorial = () => {
+            if(currentStep < tutorialSteps.length - 1) {
+                currentStep++;
+                renderTutorial();
+            } else {
+                endTutorial();
+            }
+        }
+
+        window.endTutorial = () => {
+            document.getElementById('tutorialOverlay').style.display = 'none';
+            update(ref(db, 'users/' + currentUser.name), { tutorialSeen: true });
+        }
+
+
+        // --- AUTH LOGIC ---
+        window.togglePasswordInput = () => {
+            const role = document.getElementById('loginRole').value;
+            const passGroup = document.getElementById('passGroup');
+            passGroup.style.display = (role === 'Bendahara' || role === 'Ketua') ? 'block' : 'none';
+        }
+
+        window.handleLogin = () => {
+            const name = document.getElementById('loginName').value;
+            const role = document.getElementById('loginRole').value;
+            const pass = document.getElementById('loginPass').value;
+
+            if (!name) return showToast("Nama wajib diisi!");
+
+            // Password Validation
+            if (role === 'Bendahara' && pass !== 'bendahara321') return showToast("Password Salah!");
+            if (role === 'Ketua' && pass !== 'Ketua 315') return showToast("Password Salah!");
+
+            currentUser = { name, role, points: 0 }; 
+            localStorage.setItem('user', JSON.stringify(currentUser));
+            
+            update(ref(db, 'users/' + name), { role: role });
+
+            initDashboard();
+        }
+
+        window.logout = () => {
+            localStorage.removeItem('user');
+            currentUser = null;
+            location.reload();
+        }
+
+        function initDashboard() {
+            document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+            document.getElementById('dashboard-view').classList.add('active');
+            
+            document.getElementById('dashName').innerText = currentUser.name;
+            // Mapping nama role agar lebih keren di dashboard
+            let displayRole = currentUser.role;
+            if(currentUser.role === 'Ketua') displayRole = 'Ketua Dewan Saka';
+            if(currentUser.role === 'Bendahara') displayRole = 'Bendahara Dewan';
+            if(currentUser.role === 'Anggota') displayRole = 'Anggota Saka';
+
+            document.getElementById('dashRole').innerText = displayRole;
+
+            const savedBg = localStorage.getItem('customBg');
+            if(savedBg) document.body.style.backgroundImage = `url(${savedBg})`;
+
+            checkFirstLogin();
+        }
+
+        // --- NAVIGATION ---
+        window.openFeature = (feature) => {
+            document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+            const viewId = feature + '-view';
+            const el = document.getElementById(viewId);
+            if(el) {
+                el.classList.add('active');
+                loadFeatureData(feature);
+            } else {
+                showToast("Fitur dalam pengembangan");
+                showDashboard();
+            }
+        }
+
+        window.showDashboard = () => {
+            document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+            document.getElementById('dashboard-view').classList.add('active');
+        }
+
+        // --- FEATURES LOGIC ---
+
+        function loadFeatureData(feature) {
+            if (feature === 'tugas') loadLogs();
+            if (feature === 'poin') loadLeaderboard();
+            if (feature === 'keuangan') loadFinance();
+            if (feature === 'deadline') loadDeadline();
+            if (feature === 'dokumentasi') loadDocs();
+            if (feature === 'divisi') loadDivisiJobs();
+            if (feature === 'acara') loadAcara();
+            if (feature === 'notulensi') loadNotulensi();
+            if (feature === 'aduan') loadAduan();
+        }
+
+        // 1. TUGAS & LOGS
+        window.submitTugas = () => {
+            const task = document.getElementById('tugasInput').value;
+            if(!task) return;
+
+            push(ref(db, 'logs'), {
+                name: currentUser.name,
+                task: task,
+                date: new Date().toLocaleString()
+            });
+
+            const userRef = ref(db, 'users/' + currentUser.name + '/points');
+            onValue(userRef, (snapshot) => {
+                const currentPoints = snapshot.val() || 0;
+                set(userRef, currentPoints + 1);
+            }, { onlyOnce: true });
+
+            document.getElementById('tugasInput').value = "";
+            showToast("Laporan Terkirim! +1 Poin");
+        }
+
+        function loadLogs() {
+            onValue(ref(db, 'logs'), (snapshot) => {
+                const list = document.getElementById('logList');
+                list.innerHTML = "";
+                const data = snapshot.val();
+                if(data) {
+                    Object.values(data).reverse().forEach(log => {
+                        list.innerHTML += `
+                            <div class="list-item">
+                                <div>
+                                    <strong>${log.name}</strong><br>
+                                    <small>${log.task}</small>
+                                </div>
+                                <small>${log.date.split(',')[0]}</small>
+                            </div>
+                        `;
+                    });
+                }
+            });
+        }
+
+        // 2. LEADERBOARD
+        function loadLeaderboard() {
+            onValue(ref(db, 'users'), (snapshot) => {
+                const list = document.getElementById('leaderboardList');
+                list.innerHTML = "";
+                const users = [];
+                snapshot.forEach(child => {
+                    users.push({ name: child.key, points: child.val().points || 0 });
+                });
+                
+                users.sort((a,b) => b.points - a.points);
+
+                users.forEach((u, index) => {
+                    let actionBtn = '';
+                    if (currentUser.role === 'Ketua') {
+                        actionBtn = `<button class="btn-small btn-danger" onclick="decreasePoint('${u.name}')" style="margin-left: 10px;">-1</button>`;
+                    }
+
+                    list.innerHTML += `
+                        <div class="list-item glass">
+                            <div style="display:flex; align-items:center;">
+                                <span style="font-size:1.2rem; font-weight:bold; color:gold; width: 30px;">#${index+1}</span>
+                                <div>
+                                    <strong>${u.name}</strong><br>
+                                    <span class="tag tag-green">${u.points} Poin</span>
+                                </div>
+                            </div>
+                            ${actionBtn}
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        window.decreasePoint = (targetName) => {
+            if(!confirm(`Yakin ingin mengurangi 1 poin milik ${targetName}?`)) return;
+
+            const userRef = ref(db, 'users/' + targetName + '/points');
+            onValue(userRef, (snapshot) => {
+                let currentPoints = snapshot.val() || 0;
+                if (currentPoints > 0) {
+                    set(userRef, currentPoints - 1);
+                    showToast(`Poin ${targetName} dikurangi.`);
+                } else {
+                    showToast("Poin sudah 0, tidak bisa dikurangi.");
+                }
+            }, { onlyOnce: true });
+        }
+
+        // 3. KEUANGAN
+        function loadFinance() {
+            const controls = document.getElementById('financeControls');
+            if(currentUser.role === 'Bendahara') controls.style.display = 'flex';
+
+            onValue(ref(db, 'finance'), (snapshot) => {
+                const list = document.getElementById('financeList');
+                list.innerHTML = "";
+                let total = 0;
+                const data = snapshot.val();
+                if(data) {
+                    Object.entries(data).forEach(([key, item]) => {
+                        const amount = parseInt(item.amount);
+                        if(item.type === 'income') total += amount;
+                        else total -= amount;
+                        const deleteBtn = currentUser.role === 'Bendahara' ? 
+                            `<button class="btn-small btn-danger" onclick="deleteItem('finance/${key}')">X</button>` : '';
+                        list.innerHTML += `
+                            <div class="list-item">
+                                <div>
+                                    <strong style="color: ${item.type === 'income' ? '#4ade80' : '#ef4444'}">
+                                        ${item.type === 'income' ? '+' : '-'} Rp ${amount.toLocaleString()}
+                                    </strong>
+                                    <br><small>${item.desc}</small>
+                                </div>
+                                ${deleteBtn}
+                            </div>
+                        `;
+                    });
+                }
+                document.getElementById('totalSaldo').innerText = total.toLocaleString();
+            });
+        }
+
+        window.submitFinance = () => {
+            const desc = document.getElementById('finDesc').value;
+            const amount = document.getElementById('finAmount').value;
+            const type = document.getElementById('finType').value;
+            if(desc && amount) {
+                push(ref(db, 'finance'), { desc, amount, type });
+                closeModal('financeModal');
+            }
+        }
+
+        // 4. DEADLINE
+        function loadDeadline() {
+            if(currentUser.role === 'Ketua') document.getElementById('deadlineFab').style.display = 'flex';
+            onValue(ref(db, 'deadlines'), (snapshot) => {
+                const list = document.getElementById('deadlineList');
+                list.innerHTML = "";
+                const data = snapshot.val();
+                if(data) {
+                    Object.entries(data).forEach(([key, item]) => {
+                        const isDone = item.status === 'done';
+                        const deleteBtn = currentUser.role === 'Ketua' ? 
+                            `<button class="btn-small btn-danger" onclick="deleteItem('deadlines/${key}')">Hapus</button>` : '';
+                        const toggleAction = `onclick="toggleDeadline('${key}', '${item.status}')"`;
+                        
+                        let labelText = "";
+                        if(item.color.includes('ketua')) labelText = "KETUA DEWAN";
+                        else if(item.color.includes('wakil')) labelText = "WAKIL";
+                        else if(item.color.includes('bendahara')) labelText = "BENDAHARA";
+                        else if(item.color.includes('sekretaris')) labelText = "SEKRETARIS";
+                        else if(item.color.includes('logistik')) labelText = "LOGISTIK";
+                        else if(item.color.includes('humas')) labelText = "HUMAS";
+                        else if(item.color.includes('acara')) labelText = "ACARA/GIAT";
+                        else if(item.color.includes('pdd')) labelText = "PDD";
+                        else if(item.color.includes('keamanan')) labelText = "KEAMANAN";
+                        else labelText = "SEMUA";
+
+                        const dateDisplay = item.date ? `<small style="opacity:0.7; display:block; margin-top:2px;"><i class="fa-regular fa-calendar"></i> ${item.date}</small>` : '';
+
+                        list.innerHTML += `
+                            <div class="list-item ${isDone ? 'done' : ''}">
+                                <div ${toggleAction} style="cursor:pointer; flex:1; display:flex; align-items:center;">
+                                    <span class="tag ${item.color}">${labelText}</span>
+                                    <div style="margin-left: 15px;">
+                                        <div style="font-weight:600;">${item.task}</div>
+                                        ${dateDisplay}
+                                    </div>
+                                </div>
+                                ${deleteBtn}
+                            </div>
+                        `;
+                    });
+                }
+            });
+        }
+
+        window.submitDeadline = () => {
+            const task = document.getElementById('dlTask').value;
+            const color = document.getElementById('dlColor').value;
+            const date = document.getElementById('dlDate').value;
+
+            if(task && date) {
+                push(ref(db, 'deadlines'), { task, color, date, status: 'pending' });
+                closeModal('deadlineModal');
+            } else {
+                showToast("Isi nama giat dan tanggal!");
+            }
+        }
+
+        window.toggleDeadline = (key, currentStatus) => {
+            const newStatus = currentStatus === 'pending' ? 'done' : 'pending';
+            update(ref(db, 'deadlines/' + key), { status: newStatus });
+        }
+
+        // 5. DOKUMENTASI
+        function loadDocs() {
+            if(currentUser.role === 'Ketua') document.getElementById('docFab').style.display = 'flex';
+            onValue(ref(db, 'docs'), (snapshot) => {
+                const grid = document.getElementById('docGrid');
+                grid.innerHTML = "";
+                const data = snapshot.val();
+                if(data) {
+                    Object.values(data).forEach(doc => {
+                        grid.innerHTML += `
+                            <div class="doc-card" onclick="window.open('${doc.link}', '_blank')">
+                                <h5>${doc.name}</h5>
+                                <small>${doc.date}</small>
+                                <div style="margin-top:5px; font-size:0.8rem; color:#d32f2f;">Klik untuk buka link</div>
+                            </div>
+                        `;
+                    });
+                }
+            });
+        }
+
+        window.submitDoc = () => {
+            const name = document.getElementById('docName').value;
+            const date = document.getElementById('docDate').value;
+            const link = document.getElementById('docLink').value;
+            if(name && link) {
+                push(ref(db, 'docs'), { name, date, link });
+                closeModal('docModal');
+            }
+        }
+
+        // 6. DIVISI
+        window.loadDivisiJobs = () => {
+            const div = document.getElementById('divisiSelect').value;
+            const txt = document.getElementById('jobdescInput');
+            const btn = document.getElementById('saveDivisiBtn');
+            if(currentUser.role === 'Ketua') {
+                txt.readOnly = false;
+                txt.style.border = "1px solid rgba(255,255,255,0.3)";
+                btn.style.display = "block";
+            } else {
+                txt.readOnly = true;
+                txt.style.border = "none";
+                btn.style.display = "none";
+            }
+            onValue(ref(db, 'divisi/' + div), (snapshot) => {
+                txt.value = snapshot.val() || "Belum ada jobdesk.";
+            });
+        }
+
+        window.saveDivisi = () => {
+            const div = document.getElementById('divisiSelect').value;
+            const desc = document.getElementById('jobdescInput').value;
+            set(ref(db, 'divisi/' + div), desc);
+            showToast("Jobdesk disimpan!");
+        }
+
+        // 7. ACARA SELESAI
+        window.loadAcara = () => {
+            if(currentUser.role === 'Ketua') {
+                document.getElementById('acaraInputArea').style.display = 'block';
+            } else {
+                document.getElementById('acaraInputArea').style.display = 'none';
+            }
+
+            onValue(ref(db, 'events'), (snapshot) => {
+                const list = document.getElementById('acaraList');
+                list.innerHTML = "";
+                const data = snapshot.val();
+                if(data) {
+                    Object.entries(data).reverse().forEach(([key, ev]) => {
+                        const deleteBtn = currentUser.role === 'Ketua' ? 
+                            `<button class="btn-small btn-danger" style="float:right;" onclick="deleteItem('events/${key}')">Hapus</button>` : '';
+
+                        list.innerHTML += `
+                            <div class="glass content-card">
+                                ${deleteBtn}
+                                <h4 style="color:#fbc02d; margin-bottom:5px;">${ev.title}</h4>
+                                <small style="display:block; margin-bottom:10px; opacity:0.7;">${ev.date}</small>
+                                <p style="white-space: pre-line;">${ev.story}</p>
+                            </div>
+                        `;
+                    });
+                }
+            });
+        }
+
+        window.submitAcara = () => {
+            const title = document.getElementById('acaraTitle').value;
+            const story = document.getElementById('acaraStory').value;
+            const date = new Date().toLocaleDateString();
+
+            if(title && story) {
+                push(ref(db, 'events'), { title, story, date });
+                document.getElementById('acaraTitle').value = '';
+                document.getElementById('acaraStory').value = '';
+                showToast("Giat diarsipkan!");
+            }
+        }
+
+        // 8. NOTULENSI
+        window.loadNotulensi = () => {
+            if(currentUser.role === 'Ketua') {
+                document.getElementById('notulenFab').style.display = 'flex';
+            }
+
+            onValue(ref(db, 'notes'), (snapshot) => {
+                const list = document.getElementById('notulensiList');
+                list.innerHTML = "";
+                const data = snapshot.val();
+                if(data) {
+                    Object.entries(data).reverse().forEach(([key, note]) => {
+                        const deleteBtn = currentUser.role === 'Ketua' ? 
+                            `<button class="btn-small btn-danger" style="margin-top:10px;" onclick="deleteItem('notes/${key}')">Hapus Notulen</button>` : '';
+
+                        list.innerHTML += `
+                            <div class="glass content-card">
+                                <h4 style="border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom:5px; margin-bottom:10px;">${note.title}</h4>
+                                <span class="tag tag-blue" style="margin-bottom:10px; display:inline-block;">${note.date}</span>
+                                <p style="white-space: pre-line; line-height: 1.6;">${note.content}</p>
+                                ${deleteBtn}
+                            </div>
+                        `;
+                    });
+                }
+            });
+        }
+
+        window.submitNotulensi = () => {
+            const title = document.getElementById('noteTitle').value;
+            const date = document.getElementById('noteDate').value;
+            const content = document.getElementById('noteContent').value;
+
+            if(title && content) {
+                push(ref(db, 'notes'), { title, date, content });
+                closeModal('noteModal');
+                showToast("Notulensi disimpan!");
+            }
+        }
+
+        // 9. ADUAN (REPORT)
+        window.loadAduan = () => {
+            if(currentUser.role === 'Ketua') {
+                document.getElementById('aduanFormView').style.display = 'none';
+                document.getElementById('aduanInboxView').style.display = 'block';
+                
+                onValue(ref(db, 'reports'), (snapshot) => {
+                    const list = document.getElementById('aduanList');
+                    list.innerHTML = "";
+                    const data = snapshot.val();
+                    if(data) {
+                        Object.entries(data).reverse().forEach(([key, rep]) => {
+                            list.innerHTML += `
+                                <div class="glass content-card">
+                                    <div style="display:flex; justify-content:space-between;">
+                                        <small style="color:#fcd34d;">Dari: ${rep.sender}</small>
+                                        <small>${rep.date}</small>
+                                    </div>
+                                    <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:10px 0;">
+                                    <p>${rep.content}</p>
+                                    <button class="btn-small btn-danger" style="margin-top:10px;" onclick="deleteItem('reports/${key}')">Hapus Pesan</button>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        list.innerHTML = "<p style='text-align:center; opacity:0.6;'>Belum ada laporan masuk.</p>";
+                    }
+                });
+
+            } else {
+                document.getElementById('aduanFormView').style.display = 'block';
+                document.getElementById('aduanInboxView').style.display = 'none';
+            }
+        }
+
+        window.submitAduan = () => {
+            const content = document.getElementById('aduanText').value;
+            if(!content) return showToast("Tulis pesan dulu!");
+
+            push(ref(db, 'reports'), {
+                content: content,
+                sender: currentUser.name, 
+                date: new Date().toLocaleString()
+            });
+            document.getElementById('aduanText').value = "";
+            showToast("Pesan rahasia terkirim!");
+        }
+
+        // --- UTILS ---
+        window.deleteItem = (path) => {
+            if(confirm("Yakin hapus?")) remove(ref(db, path));
+        }
+
+        window.openModal = (id, type) => {
+            document.getElementById(id).classList.add('active');
+            if(type) document.getElementById('finType').value = type;
+        }
+        window.closeModal = (id) => document.getElementById(id).classList.remove('active');
+
+        window.showToast = (msg) => {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 3000);
+        }
+
+        document.getElementById('bgInput').addEventListener('change', function() {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.body.style.backgroundImage = `url(${e.target.result})`;
+                localStorage.setItem('customBg', e.target.result);
+            }
+            reader.readAsDataURL(this.files[0]);
+        });
+
+        if(currentUser) initDashboard();
+
+    </script>
+</body>
+</html>
